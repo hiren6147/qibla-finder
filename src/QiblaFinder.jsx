@@ -8,13 +8,11 @@ const QiblaFinder = () => {
   const [deviceOrientation, setDeviceOrientation] = useState(0);
 
   useEffect(() => {
-    // Get user location using Geolocation API
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
         setUserLocation({ latitude, longitude });
 
-        // Calculate Qibla direction
         const kaabaLocation = { latitude: 21.4225, longitude: 39.8262 };
         const direction = getGreatCircleBearing(
           { latitude, longitude },
@@ -30,22 +28,31 @@ const QiblaFinder = () => {
   }, []);
 
   useEffect(() => {
-    // Handle device orientation
+    let timeout;
+
     const handleOrientation = (event) => {
-      const { alpha } = event; // alpha represents the rotation angle of the device
-      setDeviceOrientation(alpha); // Set the current rotation of the device
+      const { alpha } = event;
+      console.log("alpha--", alpha);
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        setDeviceOrientation(alpha);
+      }, 100); // Debounce interval (ms)
     };
 
-    // Add event listener for device orientation
     window.addEventListener("deviceorientation", handleOrientation);
 
-    // Cleanup event listener on component unmount
     return () => {
       window.removeEventListener("deviceorientation", handleOrientation);
+      clearTimeout(timeout);
     };
   }, []);
 
-  // Adjusted direction by factoring in device's orientation
+  useEffect(() => {
+    if (!window.DeviceOrientationEvent) {
+      alert("Device orientation is not supported on this device/browser.");
+    }
+  }, []);
+
   const adjustedQiblaDirection = qiblaDirection - deviceOrientation;
 
   return (
