@@ -5,6 +5,7 @@ const QiblaFinder = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [qiblaDirection, setQiblaDirection] = useState(0);
   const [deviceOrientation, setDeviceOrientation] = useState(0);
+  const [isFacingMecca, setIsFacingMecca] = useState(false);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -66,10 +67,25 @@ const QiblaFinder = () => {
 
   const adjustedQiblaDirection =
     (qiblaDirection - deviceOrientation + 360) % 360;
-
+  // Determine if the user is facing Mecca (±5° tolerance)
+  useEffect(() => {
+    const tolerance = 5; // Degrees
+    const isFacing = Math.abs(adjustedQiblaDirection) <= tolerance;
+    setIsFacingMecca(isFacing);
+  }, [adjustedQiblaDirection]);
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h1>Qibla Finder</h1>
+      <p>Qibla Direction: {adjustedQiblaDirection.toFixed(2)}°</p>
+      {isFacingMecca ? (
+        <p style={{ color: "green", fontWeight: "bold" }}>
+          ✅ You are now facing Mecca!
+        </p>
+      ) : (
+        <p style={{ color: "red", fontWeight: "bold" }}>
+          ❌ Rotate your device to face Mecca.
+        </p>
+      )}
       {userLocation ? (
         <div
           style={{
@@ -99,7 +115,6 @@ const QiblaFinder = () => {
               transform: `rotate(${adjustedQiblaDirection}deg) translate(-50%, -100%)`,
             }}
           ></div>
-          <p>Qibla Direction: {adjustedQiblaDirection.toFixed(2)}°</p>
         </div>
       ) : (
         <p>Fetching your location...</p>
