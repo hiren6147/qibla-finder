@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { getGreatCircleBearing } from "geolib";
-import "./QiblaFinder.css"; // Include compass styles
 
 const QiblaFinder = () => {
   const [userLocation, setUserLocation] = useState(null);
@@ -69,30 +68,38 @@ const QiblaFinder = () => {
     (qiblaDirection - deviceOrientation + 360) % 360;
 
   return (
-    <div className="qibla-finder">
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h1>Qibla Finder</h1>
       {userLocation ? (
-        <div className="compass-container">
+        <div
+          style={{
+            position: "relative",
+            width: "200px",
+            height: "200px",
+            margin: "0 auto",
+          }}
+        >
           <div
-            className="compass"
             style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              background: `url('https://as1.ftcdn.net/v2/jpg/00/76/15/10/1000_F_76151024_I1mNaznj6ocIRyF8jFVLPxwC0H0ii82r.jpg') no-repeat center/contain`,
               transform: `rotate(${-deviceOrientation}deg)`,
             }}
-          >
-            <div
-              className="needle"
-              style={{
-                transform: `rotate(${adjustedQiblaDirection}deg)`,
-              }}
-            ></div>
-          </div>
-          <p>
-            Rotate your phone to align with the Qibla direction:{" "}
-            {adjustedQiblaDirection.toFixed(2)}°
-          </p>
-          {Math.abs(adjustedQiblaDirection) < 5 && (
-            <p className="success-message">You are now facing Mecca!</p>
-          )}
+          ></div>
+          <div
+            style={{
+              position: "absolute",
+              width: "10px",
+              height: "100px",
+              background: "red",
+              top: "50%",
+              left: "50%",
+              transform: `rotate(${adjustedQiblaDirection}deg) translate(-50%, -100%)`,
+            }}
+          ></div>
+          <p>Qibla Direction: {adjustedQiblaDirection.toFixed(2)}°</p>
         </div>
       ) : (
         <p>Fetching your location...</p>
