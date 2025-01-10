@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import Compass from "react-wind-compass";
+// import Compass from "react-wind-compass";
 import { getGreatCircleBearing } from "geolib";
+import "./QiblaFinder.css";
 
 const QiblaFinder = () => {
   const [userLocation, setUserLocation] = useState(null);
@@ -83,12 +84,38 @@ const QiblaFinder = () => {
     <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h1>Qibla Finder</h1>
       {userLocation ? (
+        <div className="compass-container">
+          <div
+            className="compass"
+            style={{
+              transform: `rotate(${-deviceOrientation}deg)`,
+            }}
+          >
+            <div
+              className="needle"
+              style={{
+                transform: `rotate(${adjustedQiblaDirection}deg)`,
+              }}
+            ></div>
+          </div>
+          <p>
+            Rotate your phone to align with the Qibla direction:{" "}
+            {adjustedQiblaDirection.toFixed(2)}°
+          </p>
+          {Math.abs(adjustedQiblaDirection) < 5 && (
+            <p className="success-message">You are now facing Mecca!</p>
+          )}
+        </div>
+      ) : (
+        <p>Fetching your location...</p>
+      )}
+      {/* {userLocation ? (
         <div>
           <p>
             Your Location: {userLocation.latitude}, {userLocation.longitude}
           </p>
           <Compass
-            direction={adjustedQiblaDirection}
+            directionAngle={adjustedQiblaDirection}
             size={200}
             compassColor="gold"
             needleColor="red"
@@ -97,7 +124,7 @@ const QiblaFinder = () => {
         </div>
       ) : (
         <p>Fetching your location...</p>
-      )}
+      )} */}
     </div>
   );
 };
