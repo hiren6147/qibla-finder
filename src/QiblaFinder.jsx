@@ -5,6 +5,7 @@ import { getGreatCircleBearing } from "geolib";
 const QiblaFinder = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [qiblaDirection, setQiblaDirection] = useState(0);
+  const [deviceOrientation, setDeviceOrientation] = useState(0);
 
   useEffect(() => {
     // Get user location using Geolocation API
@@ -28,6 +29,25 @@ const QiblaFinder = () => {
     );
   }, []);
 
+  useEffect(() => {
+    // Handle device orientation
+    const handleOrientation = (event) => {
+      const { alpha } = event; // alpha represents the rotation angle of the device
+      setDeviceOrientation(alpha); // Set the current rotation of the device
+    };
+
+    // Add event listener for device orientation
+    window.addEventListener("deviceorientation", handleOrientation);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener("deviceorientation", handleOrientation);
+    };
+  }, []);
+
+  // Adjusted direction by factoring in device's orientation
+  const adjustedQiblaDirection = qiblaDirection - deviceOrientation;
+
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h1>Qibla Finder</h1>
@@ -37,12 +57,12 @@ const QiblaFinder = () => {
             Your Location: {userLocation.latitude}, {userLocation.longitude}
           </p>
           <Compass
-            direction={qiblaDirection}
+            direction={adjustedQiblaDirection}
             size={200}
             compassColor="gold"
             needleColor="red"
           />
-          <p>Qibla Direction: {qiblaDirection.toFixed(2)}°</p>
+          <p>Qibla Direction: {adjustedQiblaDirection.toFixed(2)}°</p>
         </div>
       ) : (
         <p>Fetching your location...</p>
