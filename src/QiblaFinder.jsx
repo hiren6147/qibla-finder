@@ -67,15 +67,18 @@ const QiblaFinder = () => {
 
   const adjustedQiblaDirection =
     (qiblaDirection - deviceOrientation + 360) % 360;
+
   // Determine if the user is facing Mecca (±5° tolerance)
   useEffect(() => {
     const tolerance = 5; // Degrees
     const isFacing = Math.abs(adjustedQiblaDirection) <= tolerance;
     setIsFacingMecca(isFacing);
   }, [adjustedQiblaDirection]);
+
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h1>Qibla Finder</h1>
+      {/* Message */}
       <p>Qibla Direction: {adjustedQiblaDirection.toFixed(2)}°</p>
       {isFacingMecca ? (
         <p style={{ color: "green", fontWeight: "bold" }}>
@@ -90,11 +93,28 @@ const QiblaFinder = () => {
         <div
           style={{
             position: "relative",
-            width: "200px",
-            height: "200px",
+            width: "300px",
+            height: "300px",
             margin: "0 auto",
           }}
         >
+          {/* Fixed arrow */}
+          <div
+            style={{
+              position: "absolute",
+              top: "0",
+              left: "50%",
+              width: "0",
+              height: "0",
+              borderLeft: "10px solid transparent",
+              borderRight: "10px solid transparent",
+              borderBottom: "20px solid black",
+              transform: "translateX(-50%)",
+              zIndex: 2,
+            }}
+          ></div>
+
+          {/* Rotating compass */}
           <div
             style={{
               position: "absolute",
@@ -103,18 +123,23 @@ const QiblaFinder = () => {
               background: `url('https://as1.ftcdn.net/v2/jpg/00/76/15/10/1000_F_76151024_I1mNaznj6ocIRyF8jFVLPxwC0H0ii82r.jpg') no-repeat center/contain`,
               transform: `rotate(${-deviceOrientation}deg)`,
             }}
-          ></div>
-          <div
-            style={{
-              position: "absolute",
-              width: "10px",
-              height: "100px",
-              background: "red",
-              top: "50%",
-              left: "50%",
-              transform: `rotate(${adjustedQiblaDirection}deg) translate(-50%, -100%)`,
-            }}
-          ></div>
+          >
+            {/* Kaaba Icon */}
+            <div
+              style={{
+                position: "absolute",
+                top: "10%",
+                left: "50%",
+                transform: `translateX(-50%) rotate(${adjustedQiblaDirection}deg)`,
+              }}
+            >
+              <img
+                src="/path/to/kaaba-icon.png"
+                alt="Kaaba"
+                style={{ width: "30px", height: "30px" }}
+              />
+            </div>
+          </div>
         </div>
       ) : (
         <p>Fetching your location...</p>
