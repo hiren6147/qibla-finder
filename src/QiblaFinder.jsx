@@ -28,15 +28,45 @@ const QiblaFinder = () => {
   }, []);
 
   useEffect(() => {
+    const requestPermission = async () => {
+      if (
+        typeof DeviceOrientationEvent !== "undefined" &&
+        typeof DeviceOrientationEvent.requestPermission === "function"
+      ) {
+        try {
+          const permission = await DeviceOrientationEvent.requestPermission();
+          if (permission !== "granted") {
+            alert("Permission to access device orientation was denied.");
+          }
+        } catch (error) {
+          console.error(
+            "Error requesting device orientation permission:",
+            error
+          );
+        }
+      }
+    };
+
+    requestPermission();
+  }, []);
+
+  useEffect(() => {
     let timeout;
 
+    const normalizeAngle = (angle) => {
+      if (angle < 0) return angle + 360;
+      return angle % 360;
+    };
+
     const handleOrientation = (event) => {
-      const { alpha } = event;
-      console.log("alpha--", alpha);
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        setDeviceOrientation(alpha);
-      }, 100); // Debounce interval (ms)
+      let { alpha } = event;
+      if (alpha !== null) {
+        alpha = normalizeAngle(alpha);
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          setDeviceOrientation(alpha);
+        }, 100); // Debounce interval
+      }
     };
 
     window.addEventListener("deviceorientation", handleOrientation);
@@ -45,12 +75,6 @@ const QiblaFinder = () => {
       window.removeEventListener("deviceorientation", handleOrientation);
       clearTimeout(timeout);
     };
-  }, []);
-
-  useEffect(() => {
-    if (!window.DeviceOrientationEvent) {
-      alert("Device orientation is not supported on this device/browser.");
-    }
   }, []);
 
   const adjustedQiblaDirection = qiblaDirection - deviceOrientation;
