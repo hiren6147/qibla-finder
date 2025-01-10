@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-// import Compass from "react-wind-compass";
 import { getGreatCircleBearing } from "geolib";
-import "./QiblaFinder.css";
+import "./QiblaFinder.css"; // Include compass styles
 
 const QiblaFinder = () => {
   const [userLocation, setUserLocation] = useState(null);
@@ -52,21 +51,10 @@ const QiblaFinder = () => {
   }, []);
 
   useEffect(() => {
-    let timeout;
-
-    const normalizeAngle = (angle) => {
-      if (angle < 0) return angle + 360;
-      return angle % 360;
-    };
-
     const handleOrientation = (event) => {
-      let { alpha } = event;
+      const { alpha } = event;
       if (alpha !== null) {
-        alpha = normalizeAngle(alpha);
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-          setDeviceOrientation(alpha);
-        }, 100); // Debounce interval
+        setDeviceOrientation(alpha);
       }
     };
 
@@ -74,14 +62,14 @@ const QiblaFinder = () => {
 
     return () => {
       window.removeEventListener("deviceorientation", handleOrientation);
-      clearTimeout(timeout);
     };
   }, []);
 
-  const adjustedQiblaDirection = qiblaDirection - deviceOrientation;
+  const adjustedQiblaDirection =
+    (qiblaDirection - deviceOrientation + 360) % 360;
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
+    <div className="qibla-finder">
       <h1>Qibla Finder</h1>
       {userLocation ? (
         <div className="compass-container">
@@ -109,22 +97,6 @@ const QiblaFinder = () => {
       ) : (
         <p>Fetching your location...</p>
       )}
-      {/* {userLocation ? (
-        <div>
-          <p>
-            Your Location: {userLocation.latitude}, {userLocation.longitude}
-          </p>
-          <Compass
-            directionAngle={adjustedQiblaDirection}
-            size={200}
-            compassColor="gold"
-            needleColor="red"
-          />
-          <p>Qibla Direction: {adjustedQiblaDirection.toFixed(2)}°</p>
-        </div>
-      ) : (
-        <p>Fetching your location...</p>
-      )} */}
     </div>
   );
 };
