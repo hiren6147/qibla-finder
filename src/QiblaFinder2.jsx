@@ -53,19 +53,37 @@ const QiblaFinder2 = () => {
   }, []);
 
   useEffect(() => {
+    let compassHeading = null;
+
     const handleOrientation = (event) => {
-      const { alpha } = event;
-      if (alpha !== null) {
-        setDeviceOrientation(360 - alpha);
+      if (event.webkitCompassHeading) {
+        compassHeading = event.webkitCompassHeading;
+      } else if (event.alpha !== null) {
+        compassHeading = 360 - event.alpha; // Adjust for Android
+      }
+
+      if (compassHeading !== null) {
+        setDeviceOrientation(compassHeading);
       }
     };
 
-    window.addEventListener("deviceorientationabsolute", handleOrientation);
+    // Check if the device has a compass
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener(
+        "deviceorientationabsolute",
+        handleOrientation,
+        true
+      );
+    } else {
+      // Handle devices without a compass (e.g., show a message)
+      console.error("Device orientation sensor not available.");
+    }
 
     return () => {
       window.removeEventListener(
         "deviceorientationabsolute",
-        handleOrientation
+        handleOrientation,
+        true
       );
     };
   }, []);
