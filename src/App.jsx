@@ -1,10 +1,12 @@
 import "./App.css";
-import QiblaFinder from "./QiblaFinder";
+import QiblaFinderNew from "./QiblaFinderNew";
+// import QiblaFinder from "./QiblaFinder";
 
 function App() {
   return (
     <>
-      <QiblaFinder />
+      {/* <QiblaFinder /> */}
+      <QiblaFinderNew />
     </>
   );
 }
