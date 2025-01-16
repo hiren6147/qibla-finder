@@ -38,7 +38,7 @@
     width: 2px; 
     height: 45%; 
     background-color: #dc3545; 
-    transform: translate(-50%, -100%); 
+    /* transform: translate(-50%, -100%);  */
   }
   
   .kaaba-icon {

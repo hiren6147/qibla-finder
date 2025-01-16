@@ -53,19 +53,31 @@ const QiblaFinderCopy = () => {
 
   useEffect(() => {
     const handleOrientation = (event) => {
-      const { alpha, webkitCompassHeading } = event;
-      if (alpha !== null) {
-        setDeviceOrientation(360 - alpha);
+      let compassHeading = null;
+
+      if (event.webkitCompassHeading) {
+        compassHeading = event.webkitCompassHeading;
+      } else if (event.alpha !== null) {
+        compassHeading = 360 - event.alpha;
       }
-      if (webkitCompassHeading !== null) {
-        setDeviceOrientation(alpha);
+
+      if (compassHeading !== null) {
+        setDeviceOrientation(compassHeading);
       }
     };
 
-    window.addEventListener("deviceorientation", handleOrientation, true);
+    window.addEventListener(
+      "deviceorientationabsolute",
+      handleOrientation,
+      true
+    );
 
     return () => {
-      window.removeEventListener("deviceorientation", handleOrientation, true);
+      window.removeEventListener(
+        "deviceorientationabsolute",
+        handleOrientation,
+        true
+      );
     };
   }, []);
 
@@ -92,11 +104,11 @@ const QiblaFinderCopy = () => {
 
       {userLocation ? (
         <div className="compass-wrapper">
-          <div className="compass">
-            <div
-              className="compass-needle"
-              style={{ transform: `rotate(${-deviceOrientation}deg)` }}
-            />
+          <div
+            className="compass"
+            style={{ transform: `rotate(${-deviceOrientation}deg)` }}
+          >
+            <div className="compass-needle" />
 
             <div
               className="kaaba-icon"
