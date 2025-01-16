@@ -133,10 +133,8 @@ const QiblaFinder = () => {
                 transform: `translateX(-50%) rotate(${adjustedQiblaDirection}deg)`,
               }}
             >
-              <img
-                src="/path/to/kaaba-icon.png"
-                alt="Kaaba"
-                style={{ width: "30px", height: "30px" }}
+              <div
+                style={{ width: "30px", height: "30px", background: "black" }}
               />
             </div>
           </div>
